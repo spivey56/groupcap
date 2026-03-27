@@ -83,52 +83,55 @@
             >
               {{ event.name }}
             </div>
-          </div>
 
-          <div class="event-actions">
+            <!-- Kebab actions menu on the right (per-row menu so labels can be dynamic) -->
             <button
               mat-icon-button
-              matTooltip="Share"
-              (click)="shareEvent(event); $event.stopPropagation()"
-              [attr.aria-label]="'Share event ' + event.name"
+              [matMenuTriggerFor]="menuRef"
+              class="event-kebab"
+              (click)="$event.stopPropagation()"
+              aria-haspopup="menu"
+              [attr.aria-label]="'Open actions for ' + event.name"
             >
-              <mat-icon>share</mat-icon>
+              <mat-icon>more_vert</mat-icon>
             </button>
-            <button
-              mat-icon-button
-              matTooltip="Manage"
-              (click)="openEvent(event.adminUrl); $event.stopPropagation()"
-              [attr.aria-label]="'Manage event ' + event.name"
+
+            <!-- Per-row actions menu -->
+            <mat-menu
+              #menuRef="matMenu"
+              class="event-actions-menu"
+              xPosition="before"
+              yPosition="below"
             >
-              <mat-icon>manage_accounts</mat-icon>
-            </button>
-            <button
-              mat-icon-button
-              matTooltip="Copy"
-              (click)="copy(event.publicUrl); $event.stopPropagation()"
-              [attr.aria-label]="'Copy link'"
-            >
-              <mat-icon>content_copy</mat-icon>
-            </button>
-            <button
-              mat-icon-button
-              matTooltip="Show QR"
-              (click)="toggleQr(i); $event.stopPropagation()"
-              [attr.aria-label]="'Show QR'"
-            >
-              <mat-icon>qr_code</mat-icon>
-            </button>
-            <!-- Trashcan delete icon to the RIGHT of the QR code -->
-            <button
-              class="delete-inline"
-              mat-icon-button
-              color="warn"
-              matTooltip="Delete event"
-              (click)="confirmDelete(i); $event.stopPropagation()"
-              [attr.aria-label]="'Delete event'"
-            >
-              <mat-icon>delete</mat-icon>
-            </button>
+              <button mat-menu-item (click)="shareEvent(event); $event.stopPropagation()" [attr.aria-label]="'Share event ' + event.name">
+                <mat-icon>share</mat-icon>
+                <span>Share</span>
+              </button>
+
+              <button mat-menu-item (click)="openEvent(event.adminUrl); $event.stopPropagation()" [attr.aria-label]="'Manage event ' + event.name">
+                <mat-icon>manage_accounts</mat-icon>
+                <span>Manage</span>
+              </button>
+
+              <button mat-menu-item (click)="copy(event.publicUrl); $event.stopPropagation()" aria-label="Copy link">
+                <mat-icon>content_copy</mat-icon>
+                <span>Copy link</span>
+              </button>
+
+              <button
+                mat-menu-item
+                (click)="toggleQr(i); $event.stopPropagation()"
+                [attr.aria-label]="event.showQr ? 'Hide QR' : 'Show QR'"
+              >
+                <mat-icon>qr_code</mat-icon>
+                <span>{{ event.showQr ? 'Hide QR' : 'Show QR' }}</span>
+              </button>
+
+              <button mat-menu-item class="menu-warn" (click)="confirmDelete(i); $event.stopPropagation()" aria-label="Delete event">
+                <mat-icon color="warn">delete</mat-icon>
+                <span>Delete</span>
+              </button>
+            </mat-menu>
           </div>
 
           <div class="event-qr" *ngIf="event.showQr">
@@ -169,12 +172,18 @@
         <label>Share link</label>
         <div class="link-row">
           <input [value]="publicUrl" readonly aria-label="Share link" />
-            <button mat-icon-button matTooltip="Share"
-              (click)="shareEvent({ name: eventName || 'GroupCap Event', publicUrl })"
-              [attr.aria-label]="'Share link'">
+          <button
+            mat-icon-button
+            matTooltip="Share"
+            (click)="shareEvent({ name: eventName || 'GroupCap Event', publicUrl })"
+            [attr.aria-label]="'Share link'">
             <mat-icon>share</mat-icon>
           </button>
-          <button mat-icon-button matTooltip="Copy" (click)="copy(publicUrl)" [attr.aria-label]="'Copy link'">
+          <button
+            mat-icon-button
+            matTooltip="Copy"
+            (click)="copy(publicUrl)"
+            [attr.aria-label]="'Copy link'">
             <mat-icon>content_copy</mat-icon>
           </button>
         </div>
@@ -209,10 +218,12 @@
   </div>
   <div mat-dialog-actions align="end">
     <button mat-stroked-button mat-dialog-close>Cancel</button>
-    <button mat-flat-button color="warn"
-            (click)="deleteEvent(pendingDeleteIndex!); dialog.closeAll()"
-            cdkFocusInitial>
+    <button
+      mat-flat-button
+      color="warn"
+      (click)="deleteEvent(pendingDeleteIndex!); dialog.closeAll()"
+      cdkFocusInitial
+    >
       Delete
     </button>
   </div>
-</ng-template>

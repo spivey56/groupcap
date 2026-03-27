@@ -8,4 +8,11 @@ import { Component } from '@angular/core';
 })
 export class FooterComponent {
   currentYear = new Date().getFullYear();
+  openPrivacyPolicy() {
+    window.location.href = 'privacy';
+  }
+  openTerms() {
+    window.location.href = 'terms';
+  }
 }
+

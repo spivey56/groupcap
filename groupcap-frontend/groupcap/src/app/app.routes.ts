@@ -11,8 +11,8 @@ export const routes: Routes = [
 	{ path: '', component: CreateEventComponent },
 	{ path: 'e/:eventId', component: ParticipantResponseComponent },
 	{ path: 'e/:eventId/admin', component: AdminResultsComponent },
-	{ path: 'terms', component: TermsComponent, title: 'GroupCap — Terms of Service' },
-	{ path: 'privacy', component: PrivacyComponent, title: 'GroupCap — Privacy Policy' },
+	{ path: 'terms', component: TermsComponent },
+	{ path: 'privacy', component: PrivacyComponent },
 	{ path: '**', redirectTo: '' }
 
 ];

@@ -18,6 +18,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatMenuModule } from '@angular/material/menu';              // <-- added
 import { QRCodeComponent } from 'angularx-qrcode';
 import { trigger, style, transition, animate } from '@angular/animations';
 import { EventService } from '../../services/event.service';
@@ -46,6 +47,7 @@ type CreatedEvent = {
     MatSnackBarModule,
     MatTooltipModule,
     MatDialogModule,
+    MatMenuModule,                   // <-- added
     QRCodeComponent
   ],
   templateUrl: './create-event.component.html',
@@ -227,9 +229,7 @@ export class CreateEventComponent implements AfterViewInit, OnDestroy {
     });
   }
 
-  openEvent(url: string) {
-    window.location.href = url;
-  }
+  openEvent(url: string) { window.location.href = url; }
 
   shareEvent(event: { name: string; publicUrl: string }) {
     const title = event.name || 'Check this out';
@@ -272,8 +272,9 @@ export class CreateEventComponent implements AfterViewInit, OnDestroy {
   confirmDelete(index: number) {
     this.pendingDeleteIndex = index;
     this.dialog.open(this.confirmDeleteTpl!, {
-      width: '340px',
-      panelClass: 'confirm-dialog-panel'
+      width: '360px',
+      panelClass: 'confirm-dialog-panel',  // white + indigo panel
+      backdropClass: 'blur-backdrop'       // blurred background
     });
   }
 

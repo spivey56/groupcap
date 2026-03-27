@@ -5,13 +5,13 @@
     </div>
 
     <nav class="footer__nav" aria-label="Legal links">
-      <a routerLink="/terms">Terms of Service</a>
+      <a (click)="openTerms()">Terms of Service</a>
       <span class="sep" aria-hidden="true">•</span>
-      <a routerLink="/privacy">Privacy Policy</a>
+      <a (click)="openPrivacyPolicy()">Privacy Policy</a>
     </nav>
 
     <div class="footer__meta">
-      <small>&copy; {{ currentYear }} GroupCap, LLC. All rights reserved.</small>
+      <small>&copy; {{ currentYear }} Columbus Cottage, LLC. All rights reserved.</small>
     </div>
   </div>
 </footer>
