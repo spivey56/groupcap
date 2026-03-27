@@ -1,0 +1,70 @@
+<div class="app-shell">
+  <div class="content">
+
+    <!-- LOADING CARD -->
+    <div class="card" *ngIf="loading">
+      <div class="loading-row">
+        <mat-progress-spinner diameter="28" mode="indeterminate"></mat-progress-spinner>
+        <span>Loading results...</span>
+      </div>
+    </div>
+
+    <!-- ERROR CARD -->
+    <div class="card" *ngIf="error && !loading">
+      <div class="error-box">
+        <mat-icon>error</mat-icon>
+        <span>{{ error }}</span>
+      </div>
+    </div>
+
+    <!-- RESULTS CARD -->
+    <div class="card" *ngIf="results && !loading && !error">
+      <mat-icon class="hero-icon">insights</mat-icon>
+
+      <div class="header">
+        <h1>{{ results.name }} Results</h1>
+        <p>Live contribution statistics</p>
+      </div>
+
+      <!-- Stats grid -->
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-label">
+            <mat-icon>group</mat-icon>
+            Number of responses
+          </div>
+          <div class="stat-value">{{ results.count }}</div>
+        </div>
+
+        <div class="stat">
+          <div class="stat-label">
+            <mat-icon>south</mat-icon>
+            Lowest amount
+          </div>
+          <div class="stat-value">
+            {{ results.lowest | currency:'USD':'symbol':'1.2-2' }}
+          </div>
+        </div>
+
+        <div class="stat">
+          <div class="stat-label">
+            <mat-icon>bar_chart</mat-icon>
+            Median amount
+          </div>
+          <div class="stat-value">
+            {{ results.median | currency:'USD':'symbol':'1.2-2' }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Optional actions -->
+      <div class="actions">
+        <button mat-stroked-button class="secondary-btn" (click)="refresh()">
+          <mat-icon>refresh</mat-icon>
+          Refresh
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>

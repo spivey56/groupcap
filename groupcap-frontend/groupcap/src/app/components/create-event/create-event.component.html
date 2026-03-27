@@ -1,0 +1,218 @@
+<div class="app-shell">
+  <div class="content">
+
+    <!-- CREATE EVENT (visible when isSuccessVisible === false) -->
+    <div class="card" *ngIf="!isSuccessVisible">
+
+      <mat-icon class="hero-icon">groups</mat-icon>
+
+      <div class="header">
+        <h1>GroupCap</h1>
+        <p>Set the cap. Skip the awkward.</p>
+      </div>
+
+      <form (ngSubmit)="createEvent()" #eventForm="ngForm">
+        <mat-form-field appearance="outline" class="input-field">
+          <input
+            #eventNameInput
+            matInput
+            [(ngModel)]="eventName"
+            name="eventName"
+            required
+            minlength="3"
+            maxlength="120"
+            (pointerdown)="stopPlaceholderAnimation()"
+            (input)="stopPlaceholderAnimation()"
+            (blur)="onInputBlur()"
+            [disabled]="loading"
+            placeholder=""
+            autocomplete="off"
+          />
+
+          <!-- Animated placeholder (kept smooth) -->
+          <div
+            class="animated-placeholder"
+            *ngIf="!eventName && !inputEverInteracted && showPlaceholder"
+            [@fadeInOut]
+          >
+            {{ currentPlaceholder }}
+          </div>
+
+          <mat-hint align="end">{{ (eventName.length || 0) }}/120</mat-hint>
+        </mat-form-field>
+
+        <button
+          mat-flat-button
+          color="primary"
+          class="primary-btn"
+          type="submit"
+          [disabled]="loading || !eventForm.form.valid"
+        >
+          <span *ngIf="!loading">Start Event</span>
+          <mat-progress-spinner *ngIf="loading" diameter="20" mode="indeterminate"></mat-progress-spinner>
+        </button>
+      </form>
+
+      <div *ngIf="error" class="error-box" role="alert" aria-live="polite">
+        <mat-icon>error</mat-icon>
+        <span>{{ error }}</span>
+      </div>
+
+      <br />
+
+      <!-- RECENT EVENTS -->
+      <div *ngIf="createdEvents.length" class="events">
+        <div class="events-header">Recent events</div>
+
+        <!-- ITEM (row is clickable to open Manage/Admin) -->
+        <div
+          class="event-row"
+          *ngFor="let event of createdEvents; let i = index"
+          (click)="openEvent(event.adminUrl)"
+          role="button"
+          tabindex="0"
+          (keydown)="($event.key === 'Enter' || $event.key === ' ') && openEvent(event.adminUrl)"
+          aria-label="Open event admin"
+        >
+
+          <div class="event-info">
+            <!-- Title styled as clickable; explicit handler to avoid delays -->
+            <div
+              class="name clickable"
+              (click)="openEvent(event.adminUrl); $event.stopPropagation()"
+            >
+              {{ event.name }}
+            </div>
+          </div>
+
+          <div class="event-actions">
+            <button
+              mat-icon-button
+              matTooltip="Share"
+              (click)="shareEvent(event); $event.stopPropagation()"
+              [attr.aria-label]="'Share event ' + event.name"
+            >
+              <mat-icon>share</mat-icon>
+            </button>
+            <button
+              mat-icon-button
+              matTooltip="Manage"
+              (click)="openEvent(event.adminUrl); $event.stopPropagation()"
+              [attr.aria-label]="'Manage event ' + event.name"
+            >
+              <mat-icon>manage_accounts</mat-icon>
+            </button>
+            <button
+              mat-icon-button
+              matTooltip="Copy"
+              (click)="copy(event.publicUrl); $event.stopPropagation()"
+              [attr.aria-label]="'Copy link'"
+            >
+              <mat-icon>content_copy</mat-icon>
+            </button>
+            <button
+              mat-icon-button
+              matTooltip="Show QR"
+              (click)="toggleQr(i); $event.stopPropagation()"
+              [attr.aria-label]="'Show QR'"
+            >
+              <mat-icon>qr_code</mat-icon>
+            </button>
+            <!-- Trashcan delete icon to the RIGHT of the QR code -->
+            <button
+              class="delete-inline"
+              mat-icon-button
+              color="warn"
+              matTooltip="Delete event"
+              (click)="confirmDelete(i); $event.stopPropagation()"
+              [attr.aria-label]="'Delete event'"
+            >
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+
+          <div class="event-qr" *ngIf="event.showQr">
+            <qrcode [qrdata]="event.publicUrl" [width]="120"></qrcode>
+          </div>
+        </div>
+        <!-- /ITEM -->
+
+      </div>
+    </div>
+
+    <!-- SUCCESS (visible when isSuccessVisible === true) -->
+    <div class="card success" *ngIf="isSuccessVisible">
+      <!-- Success top bar with back arrow -->
+      <div class="success-topbar">
+        <button
+          class="back-btn"
+          mat-icon-button
+          (click)="reset()"
+          [attr.aria-label]="'Back to Create Event'"
+        >
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+
+        <div class="topbar-title">Event ready</div>
+        <div class="topbar-spacer"></div>
+      </div>
+
+      <div class="success-icon" aria-hidden="true">
+        <mat-icon>check_circle</mat-icon>
+      </div>
+
+      <!-- keep title for accessibility focus target -->
+      <h2 #successTitle tabindex="-1" class="visually-hidden">Event ready</h2>
+      <p class="subtitle">Share it with your group</p>
+
+      <div class="link-box">
+        <label>Share link</label>
+        <div class="link-row">
+          <input [value]="publicUrl" readonly aria-label="Share link" />
+            <button mat-icon-button matTooltip="Share"
+              (click)="shareEvent({ name: eventName || 'GroupCap Event', publicUrl })"
+              [attr.aria-label]="'Share link'">
+            <mat-icon>share</mat-icon>
+          </button>
+          <button mat-icon-button matTooltip="Copy" (click)="copy(publicUrl)" [attr.aria-label]="'Copy link'">
+            <mat-icon>content_copy</mat-icon>
+          </button>
+        </div>
+      </div>
+
+      <div class="qr-section">
+        <qrcode [qrdata]="publicUrl" [width]="180"></qrcode>
+        <p>Scan to join</p>
+      </div>
+
+      <div class="link-box" style="margin-top: 24px; text-align: center;">
+        <button mat-stroked-button color="primary" (click)="openEvent(adminUrl)">
+          Manage Event
+        </button>
+      </div>
+
+      <button mat-stroked-button (click)="reset()" class="secondary-btn">
+        Create another
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- Confirm Delete Dialog Template -->
+<ng-template #confirmDeleteTpl>
+  <h2 mat-dialog-title>Delete event?</h2>
+  <div mat-dialog-content>
+    Are you sure you want to remove this event from your recent list?
+    <br /><br />
+    <small style="color:#64748b">This won’t affect the live link itself.</small>
+  </div>
+  <div mat-dialog-actions align="end">
+    <button mat-stroked-button mat-dialog-close>Cancel</button>
+    <button mat-flat-button color="warn"
+            (click)="deleteEvent(pendingDeleteIndex!); dialog.closeAll()"
+            cdkFocusInitial>
+      Delete
+    </button>
+  </div>
+</ng-template>

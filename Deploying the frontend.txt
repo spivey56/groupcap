@@ -1,0 +1,16 @@
+In the frontend project folder run:
+ng build --configuration production
+
+Go to the dist folder and copy the 5 files into the S3 bucket. Delete duplicates.
+
+In AWS open up CloudShell and run:
+aws cloudfront create-invalidation \
+  --distribution-id E17RPF9PISFQEK \
+  --paths "/*"
+
+This clears the cache for CloudFront and deploys the new code.
+
+Check the status to see when it completed:
+aws cloudfront get-invalidation \
+  --distribution-id E17RPF9PISFQEK \
+  --id IDD0RP2IWKED4CYBLML0XC1C9V

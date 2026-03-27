@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "angularx-qrcode": "^21.0.5"
+  }
+}

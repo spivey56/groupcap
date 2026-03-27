@@ -1,0 +1,37 @@
+Build and skip test:
+mvn clean install -DskipTests
+
+Copy to EC2
+scp -F "C:\MyKeys\ssh\config" C:\MyProjects\AWSTest\groupcap\backend\target\backend-0.0.1-SNAPSHOT.jar groupcap-ec2:/home/ec2-user/app.jar
+
+Load up ec2:
+ssh -F "C:\MyKeys\ssh\config" groupcap-ec2
+
+Look to make sure deploy is there:
+ls -lh
+
+Should see:
+app.jar
+
+Check for java processes:
+ps aux | grep java
+
+If you see a line like:
+ec2-user   1234  java -jar app.jar
+
+Stop it:
+kill -9 1234
+
+Stop the running service:
+sudo systemctl stop groupcap-backend
+
+Replace the old jar with the new one:
+sudo mv ~/app.jar /opt/groupcap/backend/app.jar
+sudo chown ec2-user:ec2-user /opt/groupcap/backend/app.jar
+sudo chmod 644 /opt/groupcap/backend/app.jar
+
+Start the service again:
+sudo systemctl start groupcap-backend
+
+Check logs (to confirm it booted properly):
+journalctl -u groupcap-backend -f

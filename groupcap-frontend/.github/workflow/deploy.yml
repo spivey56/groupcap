@@ -1,0 +1,53 @@
+name: Deploy Angular to S3 + CloudFront
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the repo
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      # Step 2: Debug - confirm folder structure
+      - name: Show repo contents
+        run: |
+          pwd
+          ls -R
+
+      # Step 3: Set up Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      # Step 4: Install Angular dependencies
+      - name: Install dependencies
+        working-directory: groupcap
+        run: npm ci
+
+      # Step 5: Build Angular app
+      - name: Build Angular app
+        working-directory: groupcap
+        run: ng build --configuration production
+
+      # Step 6: Configure AWS credentials
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      # Step 7: Deploy build to S3
+      - name: Deploy to S3
+        run: aws s3 sync ./groupcap/dist/groupcap/browser s3://groupcap.co --delete
+
+      # Step 8: Invalidate CloudFront
+      - name: Invalidate CloudFront cache
+        run: aws cloudfront create-invalidation --distribution-id YOUR_DISTRIBUTION_ID --paths "/*"

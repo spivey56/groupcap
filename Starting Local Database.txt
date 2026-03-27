@@ -1,0 +1,10 @@
+Update the application.properties:
+spring.datasource.driver-class-name=org.postgresql.Driver
+spring.datasource.url=jdbc:postgresql://localhost:5432/groupcap
+#spring.datasource.url=jdbc:postgresql://groupcap-db.ca9mwokeg7no.us-east-1.rds.amazonaws.com:5432/groupcap
+spring.datasource.username=groupcap
+spring.datasource.password=24X2iCQFBnQXar06lJ6h
+
+
+Run this in powershell (local):
+ssh -F NUL -i "C:\MyKeys\GroupCap-key.pem" -L 5432:groupcap-db.ca9mwokeg7no.us-east-1.rds.amazonaws.com:5432 ec2-user@18.204.194.102

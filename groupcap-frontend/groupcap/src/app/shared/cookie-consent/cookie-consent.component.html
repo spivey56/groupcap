@@ -1,0 +1,12 @@
+<div *ngIf="showBanner" class="cookie-banner" role="dialog" aria-live="polite" aria-label="Cookie consent">
+  <div class="cookie-content">
+    <p>
+      We use cookies for analytics and to deliver banner ads. See our
+      <a routerLink="/privacy">Privacy Policy</a>.
+    </p>
+    <div class="actions">
+      <button type="button" class="btn primary" (click)="accept()">Accept</button>
+      <button type="button" class="btn" (click)="decline()">Decline</button>
+    </div>
+  </div>
+</div>

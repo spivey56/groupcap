@@ -1,0 +1,171 @@
+:host {
+  display: block;
+  height: 100vh;
+  background: #f8fafc;
+  font-family: Inter, Roboto, sans-serif;
+  color: #0f172a;
+  font-weight: 400; /* body text normal */
+}
+
+/* LAYOUT */
+.app-shell {
+  height: 100%;
+}
+
+.content {
+  display: flex;
+  justify-content: center;
+  padding: 48px 16px;
+}
+
+/* CARD */
+.card {
+  width: 100%;
+  max-width: 440px;
+  background: white;
+  border-radius: 20px;
+  padding: 28px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.06);
+  animation: fadeIn 0.3s ease;
+}
+
+/* HEADER */
+.header {
+  margin-bottom: 20px;
+
+  h1 {
+    margin: 0;
+    font-size: 26px;
+    font-weight: 600; /* strong */
+  }
+
+  p {
+    margin: 4px 0 0;
+    color: #64748b;
+    font-size: 14px;
+    font-weight: 400;
+  }
+}
+
+/* HERO ICON */
+.hero-icon {
+  color: #22c55e;
+}
+
+/* INPUT */
+.input-field {
+  width: 100%;
+}
+
+.mat-mdc-text-field-wrapper {
+  position: relative;
+  border-radius: 12px !important;
+}
+
+/* Input readability and tone */
+input[matInput] {
+  color: #0f172a !important;
+  font-weight: 400 !important;
+}
+
+/* Hints & labels */
+.mat-mdc-form-field .mat-mdc-form-field-hint {
+  color: #64748b;
+}
+
+/* BUTTONS */
+.primary-btn {
+  margin-top: 16px;
+  width: 100%;
+  height: 48px;
+  border-radius: 12px;
+
+  font-size: 15px;   /* cleaner */
+  font-weight: 500;  /* medium, not bold */
+  letter-spacing: 0; /* crisper */
+
+  background: #2563eb !important;
+  color: white !important;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  transition: all 0.2s ease;
+}
+
+.primary-btn:hover {
+  background: #1d4ed8 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.25);
+}
+
+/* ERROR */
+.error-box {
+  margin-top: 12px;
+  padding: 10px;
+  border-radius: 10px;
+  background: #fef2f2;
+  color: #b91c1c;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-weight: 400;
+}
+
+/* SUCCESS */
+.success {
+  text-align: center;
+}
+
+.success-icon {
+  color: #22c55e;
+}
+
+/* SUBTITLE in success */
+.subtitle {
+  color: #64748b;
+  font-size: 14px;
+}
+
+/* ANIMATION */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.card {
+  animation: fadeUp 0.4s ease;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+// /* Darker, more readable currency prefix, nudged right */
+.mat-mdc-form-field .mat-mdc-form-field-prefix {
+  color: #0f172a;         /* darker ink */
+  opacity: 1;             /* ensure full opacity */
+  font-weight: 500;       /* medium, not bulky */
+  margin-left: 6px;       /* push it a bit away from the left border */
+}
+
+/* If your theme over-constrains the prefix, this hard nudge works: */
+.mat-mdc-form-field .mat-mdc-form-field-prefix span {
+  display: inline-block;
+  transform: translateX(2px); /* subtle additional push */
+}

@@ -1,0 +1,76 @@
+<div class="app-shell">
+  <div class="content">
+
+    <!-- ENTRY CARD -->
+    <div class="card" *ngIf="!submitted">
+      <mat-icon class="hero-icon">payments</mat-icon>
+
+      <div class="header">
+        <h1>{{ eventName || 'Group Event' }}</h1>
+        <p>Enter the amount you're comfortable contributing.</p>
+      </div>
+
+      <form (ngSubmit)="submit()" #amountForm="ngForm">
+        <mat-form-field appearance="outline" class="input-field">
+          <mat-label>Amount</mat-label>
+          <span matPrefix>$&nbsp;</span>
+
+          <input
+            matInput
+            type="text"
+            [value]="displayAmount"
+            name="amount"
+            required
+            min="0"
+            max="9999999999.99"
+            step="0.01"
+            [disabled]="loading || submitted" 
+            inputmode="decimal"
+            (keydown)="blockNonDecimal($event)"
+            (input)="limitDecimals($event)"
+            autocomplete="off"
+          />
+
+          <mat-hint align="start">Your response is anonymous.</mat-hint>
+        </mat-form-field>
+
+        <button
+          mat-flat-button
+          color="primary"
+          class="primary-btn"
+          type="submit"
+          [disabled]="loading || submitted || !amountForm.form.valid"
+        >
+          <span *ngIf="!loading">Submit</span>
+          <mat-progress-spinner
+            *ngIf="loading"
+            diameter="20"
+            mode="indeterminate"
+          ></mat-progress-spinner>
+        </button>
+      </form>
+
+      <div *ngIf="error" class="error-box">
+        <mat-icon>error</mat-icon>
+        <span>{{ error }}</span>
+      </div>
+    </div>
+
+    <!-- SUCCESS CARD -->
+    <div class="card success" *ngIf="submitted">
+      <div class="success-icon">
+        <mat-icon>check_circle</mat-icon>
+      </div>
+
+      <h2>Thank you for your response!</h2>
+      
+      <p class="subtitle">
+        Your contribution for <strong>{{ eventName || 'this event' }}</strong> has been recorded.
+      </p>
+
+
+      <!-- Edit button removed -->
+      <!-- <button mat-stroked-button class="secondary-btn" (click)="edit()">Edit amount</button> -->
+    </div>
+
+  </div>
