@@ -408,3 +408,15 @@ input[matInput] {
   backdrop-filter: blur(8px);
   background: rgba(30, 64, 175, 0.20); /* indigo-ish translucent */
 }
+
+/* Hero logo (replaces mat-icon) */
+.hero-logo {
+  display: block;
+  margin: 0 auto 12px auto;
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+  border-radius: 12px;
+  background: #eef2ff;
+  box-shadow: 0 4px 16px rgba(37, 99, 235, 0.10);
+}
