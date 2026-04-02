@@ -42,6 +42,11 @@ public class EventService {
 		return responseRepository.save(response);
 	}
 
+	// Get adminKey by event id
+	public String getAdminKeyByEventId(String eventId) {
+		return eventRepository.findAdminKeyById(eventId);
+	}
+
 	// Create a method getResults that takes eventId and adminKey
 	// Steps:
 	// - find Event by id, throw exception if not found
@@ -87,5 +92,7 @@ public class EventService {
 			.orElseThrow(() -> new RuntimeException("Event not found"));
 		return event.getName();
 	}
+
+	
 
 }

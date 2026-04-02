@@ -25,4 +25,8 @@ export class EventService {
   getEventName(eventId: string): Observable<{ name: string }> {
     return this.http.get<{ name: string }>(`${this.apiUrl}/events/${eventId}/name`);
   }
+
+  getAdminKey(eventId: string): Observable<{ adminKey: string }> {
+    return this.http.get<{ adminKey: string }>(`${this.apiUrl}/events/${eventId}/adminkey`);
+  }
 }

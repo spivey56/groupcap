@@ -59,4 +59,10 @@ public class EventController {
         String name = eventService.getEventName(eventId);
         return Map.of("name", name);
     }
+    // Get adminKey for a given event id
+    @GetMapping("/{eventId}/adminkey")
+    public Map<String, String> getAdminKey(@PathVariable String eventId) {
+        String adminKey = eventService.getAdminKeyByEventId(eventId);
+        return Map.of("adminKey", adminKey);
+    }
 }

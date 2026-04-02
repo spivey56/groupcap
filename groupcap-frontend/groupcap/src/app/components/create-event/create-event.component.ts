@@ -294,4 +294,10 @@ export class CreateEventComponent implements AfterViewInit, OnDestroy {
     this.snackBar.open('Event removed', 'Close', { duration: 1500 });
     this.pendingDeleteIndex = null;
   }
+
+  voteAsOrganizer() {
+    if (!this.publicUrl) return;
+      this.openEvent(this.publicUrl);
+    }
+
 }
