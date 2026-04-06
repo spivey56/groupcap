@@ -5,6 +5,8 @@ import { AdminResultsComponent } from './components/admin-results/admin-results.
 
 import { TermsComponent } from './legal/terms/terms.component';
 import { PrivacyComponent } from './legal/privacy/privacy.component';
+import { AboutComponent } from './legal/about/about.component';
+import { ContactComponent } from './legal/contact/contact.component';
 
 
 export const routes: Routes = [
@@ -13,6 +15,8 @@ export const routes: Routes = [
 	{ path: 'e/:eventId/admin', component: AdminResultsComponent },
 	{ path: 'terms', component: TermsComponent },
 	{ path: 'privacy', component: PrivacyComponent },
+	{ path: 'about', component: AboutComponent },
+	{ path: 'contact', component: ContactComponent },
 	{ path: '**', redirectTo: '' }
 
 ];

@@ -14,5 +14,11 @@ export class FooterComponent {
   openTerms() {
     window.location.href = 'terms';
   }
+  openAbout() {
+    window.location.href = 'about';
+  }
+  openContact() {
+    window.location.href = 'contact';
+  }
 }
 

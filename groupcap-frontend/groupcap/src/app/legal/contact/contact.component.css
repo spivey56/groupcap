@@ -1,0 +1,19 @@
+/* src/styles.scss or legal/_legal.scss */
+.legal {
+  max-width: 800px;
+  margin: 24px auto;
+  padding: 0 16px;
+  line-height: 1.6;
+
+  h1 {
+    font-size: 24px;
+    margin-bottom: 12px;
+  }
+  h2 {
+    margin-top: 20px;
+    font-size: 18px;
+  }
+  ul {
+    padding-left: 18px;
+  }
+}
