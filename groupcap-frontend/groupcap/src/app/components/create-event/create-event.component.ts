@@ -1,3 +1,7 @@
+declare global {
+  interface Window { adsbygoogle: any[]; }
+}
+
 import {
   Component,
   AfterViewInit,
@@ -18,7 +22,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { MatMenuModule } from '@angular/material/menu';              // <-- added
+import { MatMenuModule } from '@angular/material/menu';
 import { QRCodeComponent } from 'angularx-qrcode';
 import { trigger, style, transition, animate } from '@angular/animations';
 import { EventService } from '../../services/event.service';
@@ -47,7 +51,7 @@ type CreatedEvent = {
     MatSnackBarModule,
     MatTooltipModule,
     MatDialogModule,
-    MatMenuModule,                   // <-- added
+    MatMenuModule,
     QRCodeComponent
   ],
   templateUrl: './create-event.component.html',
@@ -61,18 +65,13 @@ type CreatedEvent = {
 })
 export class CreateEventComponent implements AfterViewInit, OnDestroy {
   eventName = '';
-
-  // Success view toggle
   isSuccessVisible = false;
-
   publicUrl: string = '';
   adminUrl: string = '';
   loading = false;
   error: string | null = null;
-
   createdEvents: CreatedEvent[] = [];
 
-  // Placeholder carousel
   placeholders = ['Allison\'s Bachelorette', 'Hockey Tickets', 'Maine Hotel', 'Steve\'s Birthday Gift', 'Office Secret Santa'];
   currentPlaceholder = '';
   placeholderIndex = 0;
@@ -85,7 +84,6 @@ export class CreateEventComponent implements AfterViewInit, OnDestroy {
   @ViewChild('eventNameInput', { static: false }) eventNameInput?: ElementRef<HTMLInputElement>;
   @ViewChild('confirmDeleteTpl', { static: true }) confirmDeleteTpl?: TemplateRef<any>;
 
-  // index to delete when confirming
   pendingDeleteIndex: number | null = null;
 
   constructor(
@@ -96,16 +94,23 @@ export class CreateEventComponent implements AfterViewInit, OnDestroy {
     this.loadEvents();
   }
 
-  ngAfterViewInit() {
-    this.currentPlaceholder = this.placeholders[0];
-
-    // DO NOT auto-focus the input; it kills the placeholder carousel
-    setTimeout(() => {
-      if (this.inputEverInteracted) return;
+ngAfterViewInit() {
+  // Existing placeholder logic
+  this.currentPlaceholder = this.placeholders[0];
+  setTimeout(() => {
+    if (!this.inputEverInteracted) {
       this.showPlaceholder = true;
       this.startPlaceholderAnimation();
-    }, 50);
-  }
+    }
+
+    // ===== Initialize AdSense after view is ready =====
+    try {
+      (window.adsbygoogle = window.adsbygoogle || []).push({});
+    } catch (e) {
+      console.warn('AdSense push failed', e);
+    }
+  }, 50);
+}
 
   startPlaceholderAnimation() {
     if (this.inputEverInteracted) return;
@@ -127,9 +132,8 @@ export class CreateEventComponent implements AfterViewInit, OnDestroy {
     }, 2000);
   }
 
-  // Called only on real user interaction (pointerdown or input), not focus
   stopPlaceholderAnimation() {
-    if (this.inputEverInteracted) return; // idempotent
+    if (this.inputEverInteracted) return;
     this.inputEverInteracted = true;
     this.placeholderStopped = true;
     if (this.placeholderTimer) clearTimeout(this.placeholderTimer);
@@ -144,7 +148,6 @@ export class CreateEventComponent implements AfterViewInit, OnDestroy {
   createEvent() {
     this.loading = true;
     this.error = null;
-    const url = (this.eventService as any)['apiUrl'] + '/events';
 
     this.eventService.createEvent(this.eventName).subscribe({
       next: (res) => {
@@ -152,7 +155,6 @@ export class CreateEventComponent implements AfterViewInit, OnDestroy {
         this.publicUrl = res.publicUrl.startsWith('http') ? res.publicUrl : origin + res.publicUrl;
         this.adminUrl  = res.adminUrl.startsWith('http') ? res.adminUrl  : origin + res.adminUrl;
 
-        // Save to recent list
         this.saveEvent({
           name: this.eventName,
           publicUrl: this.publicUrl,
@@ -162,18 +164,24 @@ export class CreateEventComponent implements AfterViewInit, OnDestroy {
         });
         this.loadEvents();
 
-        // Show success via boolean
         this.isSuccessVisible = true;
-
-        // Clear input & stop loading
         this.eventName = '';
         this.loading = false;
 
-        // Focus success title (does not affect placeholder carousel)
-        setTimeout(() => this.successTitle?.nativeElement.focus(), 0);
+        setTimeout(() => {
+          this.successTitle?.nativeElement.focus();
+
+          // ==== AdSense trigger (safe for TypeScript) ====
+          try {
+            window.adsbygoogle = window.adsbygoogle || [];
+            window.adsbygoogle.push({});
+          } catch (e) {
+            console.warn('AdSense failed to load:', e);
+          }
+        }, 0);
       },
       error: (err) => {
-        this.error = `Failed to create event.\nURL: ${url}\nError: ${err?.message || err?.statusText || err}`;
+        this.error = `Failed to create event.\nError: ${err?.message || err?.statusText || err}`;
         this.loading = false;
       }
     });
@@ -187,33 +195,22 @@ export class CreateEventComponent implements AfterViewInit, OnDestroy {
 
   loadEvents() {
     const loaded: CreatedEvent[] = JSON.parse(localStorage.getItem('createdEvents') || '[]');
-    this.createdEvents = loaded.map(e => ({
-      ...e,
-      showQr: e.showQr ?? false
-    }));
+    this.createdEvents = loaded.map(e => ({ ...e, showQr: e.showQr ?? false }));
   }
 
   copy(url: string | null) {
     if (!url) return;
     navigator.clipboard.writeText(url);
-    this.snackBar.open('Copied to clipboard!', 'Close', {
-      duration: 2000,
-      horizontalPosition: 'center',
-      verticalPosition: 'bottom'
-    });
+    this.snackBar.open('Copied to clipboard!', 'Close', { duration: 2000, horizontalPosition: 'center', verticalPosition: 'bottom' });
   }
 
   reset() {
-    // Hide success and return to create
     this.isSuccessVisible = false;
-
     this.eventName = '';
     this.publicUrl = '';
     this.adminUrl = '';
     this.error = null;
     this.loading = false;
-
-    // Optionally restart placeholder if never interacted
     if (!this.inputEverInteracted) {
       this.showPlaceholder = true;
       this.startPlaceholderAnimation();
@@ -221,12 +218,7 @@ export class CreateEventComponent implements AfterViewInit, OnDestroy {
   }
 
   toggleQr(index: number) {
-    this.createdEvents = this.createdEvents.map((e, i) => {
-      if (i === index) {
-        return { ...e, showQr: !e.showQr };
-      }
-      return { ...e, showQr: false };
-    });
+    this.createdEvents = this.createdEvents.map((e, i) => (i === index ? { ...e, showQr: !e.showQr } : { ...e, showQr: false }));
   }
 
   openEvent(url: string) { window.location.href = url; }
@@ -234,17 +226,13 @@ export class CreateEventComponent implements AfterViewInit, OnDestroy {
   shareEvent(event: { name: string; publicUrl: string }) {
     const eventName = event.name || 'Check this out';
     const url = event.publicUrl;
-    // Combine event name and link in both fields for best compatibility
     const title = `Join "${eventName}" on GroupCap: ${url}`;
     const text = `Join "${eventName}" on GroupCap\n${url}`;
 
     if (navigator.share) {
       navigator.share({ title, text, url })
         .then(() => this.snackBar.open('Shared!', 'Close', { duration: 1500 }))
-        .catch((err: any) => {
-          if (!err || err.name === 'AbortError') return;
-          this.fallbackShare({ title, text, url });
-        });
+        .catch((err: any) => { if (!err || err.name === 'AbortError') return; this.fallbackShare({ title, text, url }); });
     } else {
       this.fallbackShare({ title, text, url });
     }
@@ -253,53 +241,25 @@ export class CreateEventComponent implements AfterViewInit, OnDestroy {
   private fallbackShare({ title, text, url }: { title: string; text: string; url: string }) {
     const mailto = `mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(`${text}\n\n${url}`)}`;
     const mailWindow = window.open(mailto, '_blank', 'noopener,noreferrer');
-
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    if (!mailWindow && isMobile) {
-      const sms = `sms:?&body=${encodeURIComponent(`${text} ${url}`)}`;
-      window.open(sms, '_blank', 'noopener,noreferrer');
-    }
-
-    navigator.clipboard.writeText(url).then(() => {
-      this.snackBar.open('Link copied — share it anywhere!', 'Close', {
-        duration: 2500,
-        horizontalPosition: 'center',
-        verticalPosition: 'bottom'
-      });
-    });
+    if (!mailWindow && isMobile) window.open(`sms:?&body=${encodeURIComponent(`${text} ${url}`)}`, '_blank', 'noopener,noreferrer');
+    navigator.clipboard.writeText(url).then(() => this.snackBar.open('Link copied — share it anywhere!', 'Close', { duration: 2500, horizontalPosition: 'center', verticalPosition: 'bottom' }));
   }
-
-  /* ========== DELETE (confirm dialog) ========== */
 
   confirmDelete(index: number) {
     this.pendingDeleteIndex = index;
-    this.dialog.open(this.confirmDeleteTpl!, {
-      width: '360px',
-      panelClass: 'confirm-dialog-panel',  // white + indigo panel
-      backdropClass: 'blur-backdrop'       // blurred background
-    });
+    this.dialog.open(this.confirmDeleteTpl!, { width: '360px', panelClass: 'confirm-dialog-panel', backdropClass: 'blur-backdrop' });
   }
 
   deleteEvent(index: number) {
     if (index == null || index < 0 || index >= this.createdEvents.length) return;
-
     const toDelete = this.createdEvents[index];
     this.createdEvents.splice(index, 1);
-
-    // Persist deletion
     const events = JSON.parse(localStorage.getItem('createdEvents') || '[]') as CreatedEvent[];
-    const updated = events.filter(e =>
-      !(e.publicUrl === toDelete.publicUrl && e.adminUrl === toDelete.adminUrl && e.created === toDelete.created)
-    );
-    localStorage.setItem('createdEvents', JSON.stringify(updated));
-
+    localStorage.setItem('createdEvents', JSON.stringify(events.filter(e => !(e.publicUrl === toDelete.publicUrl && e.adminUrl === toDelete.adminUrl && e.created === toDelete.created))));
     this.snackBar.open('Event removed', 'Close', { duration: 1500 });
     this.pendingDeleteIndex = null;
   }
 
-  voteAsOrganizer() {
-    if (!this.publicUrl) return;
-      this.openEvent(this.publicUrl);
-    }
-
+  voteAsOrganizer() { if (this.publicUrl) this.openEvent(this.publicUrl); }
 }

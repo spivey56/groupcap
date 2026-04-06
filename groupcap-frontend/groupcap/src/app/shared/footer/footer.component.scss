@@ -1,8 +1,14 @@
+
 .site-footer {
   border-top: 1px solid #e5e7eb;
   background: #fafafa;
   color: #374151;
   font-size: 14px;
+  width: 100%;
+  /* Remove position so it flows naturally */
+  position: static;
+  left: 0;
+  z-index: 10;
 }
 
 .footer__inner {
@@ -10,7 +16,7 @@
   margin: 0 auto;
   padding: 16px;
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: center;
   gap: 12px;
   justify-content: space-between;

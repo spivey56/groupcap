@@ -1,5 +1,10 @@
 
+/* Make the app-root fill the viewport and use flex layout */
 :host {
+	display: flex;
+	flex-direction: column;
+	min-height: 100vh;
+
 	--bright-blue: oklch(51.01% 0.274 263.83);
 	--electric-violet: oklch(53.18% 0.28 296.97);
 	--french-violet: oklch(47.66% 0.246 305.88);
@@ -34,6 +39,13 @@
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 }
+
+.main-content {
+	flex: 1 0 auto;
+	display: flex;
+	flex-direction: column;
+}
+
 h1 {
 	font-size: 3.125rem;
 	color: var(--gray-900);
