@@ -232,9 +232,11 @@ export class CreateEventComponent implements AfterViewInit, OnDestroy {
   openEvent(url: string) { window.location.href = url; }
 
   shareEvent(event: { name: string; publicUrl: string }) {
-    const title = event.name || 'Check this out';
-    const text = `Join "${event.name}" on GroupCap`;
+    const eventName = event.name || 'Check this out';
     const url = event.publicUrl;
+    // Combine event name and link in both fields for best compatibility
+    const title = `Join "${eventName}" on GroupCap: ${url}`;
+    const text = `Join "${eventName}" on GroupCap\n${url}`;
 
     if (navigator.share) {
       navigator.share({ title, text, url })
